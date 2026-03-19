@@ -15,51 +15,87 @@ body {
 header {
   background:#121a2b;
   padding:15px;
-  text-align:center;
-  font-size:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   color:gold;
+}
+
+.logo {
+  font-size:22px;
+  font-weight:bold;
 }
 
 .banner {
   text-align:center;
-  padding:40px;
+  padding:50px;
   background:linear-gradient(135deg,#0b0f1a,#1d2a44);
 }
 
 input {
   padding:10px;
   margin:10px;
+  border-radius:5px;
+  border:none;
 }
 
 button {
   background:gold;
   border:none;
   padding:10px 20px;
+  border-radius:5px;
   cursor:pointer;
+  font-weight:bold;
+}
+
+.container {
+  padding:20px;
 }
 
 .game {
-  background:#121a2b;
-  margin:10px;
+  background:#1a2338;
+  margin:10px 0;
   padding:15px;
   border-radius:10px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  transition:0.3s;
+}
+
+.game:hover {
+  transform:scale(1.02);
+}
+
+footer {
+  text-align:center;
+  padding:20px;
+  background:#121a2b;
+  margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🦅 FALCONBETS</header>
+<header>
+  <div class="logo">🦅 FALCONBETS</div>
+</header>
 
 <div class="banner">
-  <input id="user" placeholder="Seu nome">
+  <h1>Aposte como um profissional ⚽</h1>
+  <input id="user" placeholder="Digite seu nome">
   <button onclick="login()">Entrar</button>
 </div>
 
-<h2 style="text-align:center">Jogos ⚽</h2>
-<div id="games"></div>
+<div class="container">
+  <h2>🔥 Jogos de Hoje</h2>
+  <div id="games"></div>
+</div>
+
+<footer>
+© 2026 Falconbets
+</footer>
 
 <script>
 const API = "https://falconbets-pro.onrender.com";
@@ -72,7 +108,7 @@ async function loadGames(){
   games.forEach(g=>{
     html+=`
       <div class="game">
-        ${g.home} x ${g.away}
+        <span>${g.home} x ${g.away}</span>
         <button onclick="bet(${g.id})">
           Odd ${g.odd}
         </button>
@@ -108,7 +144,7 @@ function bet(id){
     })
   });
 
-  alert("Aposta feita!");
+  alert("Aposta realizada!");
 }
 
 loadGames();
