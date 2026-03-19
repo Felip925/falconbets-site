@@ -5,73 +5,47 @@
 <title>Falconbets</title>
 
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#0b0f1a;
-  color:white;
-}
+body {margin:0;font-family:Arial;background:#0b0f1a;color:white}
 
 header {
   background:#121a2b;
   padding:15px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
   color:gold;
 }
 
-.logo {
-  font-size:22px;
-  font-weight:bold;
-}
+.banner {text-align:center;padding:40px}
 
-.banner {
-  text-align:center;
-  padding:50px;
-  background:linear-gradient(135deg,#0b0f1a,#1d2a44);
-}
-
-input {
-  padding:10px;
-  margin:10px;
-  border-radius:5px;
-  border:none;
-}
+input {padding:10px;margin:10px;border:none;border-radius:5px}
 
 button {
   background:gold;
   border:none;
-  padding:10px 20px;
+  padding:10px;
   border-radius:5px;
   cursor:pointer;
-  font-weight:bold;
-}
-
-.container {
-  padding:20px;
 }
 
 .game {
   background:#1a2338;
-  margin:10px 0;
+  margin:10px;
   padding:15px;
   border-radius:10px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  transition:0.3s;
 }
 
-.game:hover {
-  transform:scale(1.02);
-}
+.container {padding:20px}
 
-footer {
-  text-align:center;
-  padding:20px;
-  background:#121a2b;
-  margin-top:20px;
+.admin {
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  display:none;
 }
 </style>
 </head>
@@ -79,66 +53,91 @@ footer {
 <body>
 
 <header>
-  <div class="logo">🦅 FALCONBETS</div>
+  🦅 FALCONBETS
+  <div>Saldo: R$ <span id="saldo">0</span></div>
 </header>
 
 <div class="banner">
-  <h1>Aposte como um profissional ⚽</h1>
-  <input id="user" placeholder="Digite seu nome">
+  <input id="user" placeholder="Usuário">
   <button onclick="login()">Entrar</button>
 </div>
 
 <div class="container">
-  <h2>🔥 Jogos de Hoje</h2>
+  <h2>Jogos ⚽</h2>
   <div id="games"></div>
 </div>
 
-<footer>
-© 2026 Falconbets
-</footer>
+<!-- ADMIN SECRETO -->
+<div class="admin" id="admin">
+  <h3>👑 ADMIN</h3>
+  <input id="userAdmin" placeholder="Usuário">
+  <input id="valor" placeholder="Valor">
+  <button onclick="addSaldo()">Adicionar saldo</button>
+</div>
 
 <script>
 const API = "https://falconbets-pro.onrender.com";
 
+let usuario="";
+let saldo=0;
+
+// LOGIN
+async function login(){
+  usuario=document.getElementById("user").value;
+
+  await fetch(API+"/register",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:usuario})
+  });
+
+  saldo=100;
+  atualizarSaldo();
+  loadGames();
+
+  // ativa admin secreto
+  if(usuario === "admin"){
+    document.getElementById("admin").style.display="block";
+  }
+}
+
+// SALDO
+function atualizarSaldo(){
+  document.getElementById("saldo").innerText=saldo;
+}
+
+// JOGOS
 async function loadGames(){
-  const res = await fetch(API+"/games");
-  const games = await res.json();
+  const res=await fetch(API+"/games");
+  const games=await res.json();
 
   let html="";
   games.forEach(g=>{
     html+=`
       <div class="game">
-        <span>${g.home} x ${g.away}</span>
-        <button onclick="bet(${g.id})">
+        ${g.home} x ${g.away}
+        <button onclick="bet(${g.id}, ${g.odd})">
           Odd ${g.odd}
         </button>
       </div>
     `;
   });
 
-  document.getElementById("games").innerHTML = html;
+  document.getElementById("games").innerHTML=html;
 }
 
-function login(){
-  const user=document.getElementById("user").value;
+// APOSTA
+async function bet(id, odd){
+  if(!usuario) return alert("Faça login");
 
-  fetch(API+"/register",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({username:user})
-  });
+  saldo -= 10;
+  atualizarSaldo();
 
-  alert("Entrou!");
-}
-
-function bet(id){
-  const user=document.getElementById("user").value;
-
-  fetch(API+"/bet",{
+  await fetch(API+"/bet",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      username:user,
+      username:usuario,
       gameId:id,
       amount:10
     })
@@ -147,7 +146,16 @@ function bet(id){
   alert("Aposta realizada!");
 }
 
-loadGames();
+// ADMIN
+async function addSaldo(){
+  const user=document.getElementById("userAdmin").value;
+  const valor=parseFloat(document.getElementById("valor").value);
+
+  if(user === usuario){
+    saldo += valor;
+    atualizarSaldo();
+  }
+}
 </script>
 
 </body>
