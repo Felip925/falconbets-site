@@ -1,3 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Falconbets</title>
+
+<style>
+body {margin:0;font-family:Arial;background:#0b0f1a;color:white}
+
+header {
+  background:#121a2b;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  color:gold;
+}
+
+.banner {text-align:center;padding:40px}
+
+input, textarea {
+  padding:10px;
+  margin:10px;
+  border:none;
+  border-radius:5px;
+  width:80%;
+}
+
+button {
+  background:gold;
+  border:none;
+  padding:10px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.game {
+  background:#1a2338;
+  margin:10px;
+  padding:15px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.container {padding:20px}
+
+.admin {
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  display:none;
+  width:300px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  🦅 FALCONBETS
+  <div>Saldo: R$ <span id="saldo">0</span></div>
+</header>
+
+<div class="banner">
+  <input id="user" placeholder="Usuário">
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div class="container">
+  <h2>Jogos ⚽</h2>
+  <div id="games"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin" id="admin">
+  <h3>👑 ADMIN</h3>
+
+  <input id="userAdmin" placeholder="Usuário">
+  <input id="valor" placeholder="Valor">
+  <button onclick="addSaldo()">Adicionar saldo</button>
+
+  <hr>
+
+  <h4>⚽ Atualizar Jogos</h4>
+
+  <textarea id="gamesAdmin" rows="8" placeholder="Cole os jogos aqui"></textarea>
+
+  <button onclick="updateGames()">Atualizar jogos</button>
+</div>
+
 <script>
 const API = "https://falconbets-pro.onrender.com";
 
@@ -35,6 +128,7 @@ async function loadGames(){
     const games = await res.json();
 
     let html="";
+
     games.forEach(g=>{
       html+=`
         <div class="game">
@@ -80,7 +174,7 @@ async function bet(id, odd){
   alert("Aposta realizada!");
 }
 
-// 🔥 ATUALIZAR JOGOS (ADMIN)
+// ATUALIZAR JOGOS
 async function updateGames(){
   const texto = document.getElementById("gamesAdmin").value;
 
@@ -115,3 +209,6 @@ function addSaldo(){
 // AUTO LOAD
 window.onload = loadGames;
 </script>
+
+</body>
+</html>
