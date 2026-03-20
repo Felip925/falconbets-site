@@ -1,82 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>Falconbets</title>
-
-<style>
-body {margin:0;font-family:Arial;background:#0b0f1a;color:white}
-
-header {
-  background:#121a2b;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  color:gold;
-}
-
-.banner {text-align:center;padding:40px}
-
-input {padding:10px;margin:10px;border:none;border-radius:5px}
-
-button {
-  background:gold;
-  border:none;
-  padding:10px;
-  border-radius:5px;
-  cursor:pointer;
-}
-
-.game {
-  background:#1a2338;
-  margin:10px;
-  padding:15px;
-  border-radius:10px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.container {padding:20px}
-
-.admin {
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  background:#111;
-  padding:15px;
-  border-radius:10px;
-  display:none;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  🦅 FALCONBETS
-  <div>Saldo: R$ <span id="saldo">0</span></div>
-</header>
-
-<div class="banner">
-  <input id="user" placeholder="Usuário">
-  <button onclick="login()">Entrar</button>
-</div>
-
-<div class="container">
-  <h2>Jogos ⚽</h2>
-  <div id="games"></div>
-</div>
-
-<!-- ADMIN SECRETO -->
-<div class="admin" id="admin">
-  <h3>👑 ADMIN</h3>
-  <input id="userAdmin" placeholder="Usuário">
-  <input id="valor" placeholder="Valor">
-  <button onclick="addSaldo()">Adicionar saldo</button>
-</div>
-
 <script>
-const API = "https://falconbets-pro.onrender.com";";
+const API = "https://falconbets-pro.onrender.com";
 
 let usuario="";
 let saldo=0;
@@ -95,7 +18,7 @@ async function login(){
   atualizarSaldo();
   loadGames();
 
-  // ativa admin secreto
+  // ADMIN SECRETO
   if(usuario === "admin"){
     document.getElementById("admin").style.display="block";
   }
@@ -106,29 +29,41 @@ function atualizarSaldo(){
   document.getElementById("saldo").innerText=saldo;
 }
 
-// JOGOS
+// CARREGAR JOGOS
 async function loadGames(){
-  const res=await fetch(API+"/games");
-  const games=await res.json();
+  try{
+    const res = await fetch(API + "/games");
+    const games = await res.json();
 
-  let html="";
-  games.forEach(g=>{
-    html+=`
-      <div class="game">
-        ${g.home} x ${g.away}
-        <button onclick="bet(${g.id}, ${g.odd})">
-          Odd ${g.odd}
-        </button>
-      </div>
-    `;
-  });
+    let html="";
+    games.forEach(g=>{
+      html+=`
+        <div class="game">
+          <div>
+            <b>${g.league}</b><br>
+            ${g.home} x ${g.away}<br>
+            🕒 ${g.time}
+          </div>
 
-  document.getElementById("games").innerHTML=html;
+          <button onclick="bet(${g.id}, ${g.odd})">
+            Odd ${g.odd}
+          </button>
+        </div>
+      `;
+    });
+
+    document.getElementById("games").innerHTML = html;
+
+  }catch(e){
+    console.log("Erro ao carregar jogos:", e);
+  }
 }
 
 // APOSTA
 async function bet(id, odd){
   if(!usuario) return alert("Faça login");
+
+  if(saldo < 10) return alert("Saldo insuficiente");
 
   saldo -= 10;
   atualizarSaldo();
@@ -147,7 +82,7 @@ async function bet(id, odd){
 }
 
 // ADMIN
-async function addSaldo(){
+function addSaldo(){
   const user=document.getElementById("userAdmin").value;
   const valor=parseFloat(document.getElementById("valor").value);
 
@@ -156,7 +91,7 @@ async function addSaldo(){
     atualizarSaldo();
   }
 }
-</script>
 
-</body>
-</html>
+// 🔥 CARREGA JOGOS AUTOMATICO AO ABRIR
+window.onload = loadGames;
+</script>
