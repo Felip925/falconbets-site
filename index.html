@@ -1,78 +1,10 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>Falconbets</title>
-
-<style>
-body {margin:0;font-family:Arial;background:#0b0f1a;color:white}
-header {
-  background:#121a2b;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  color:gold;
-}
-.banner {text-align:center;padding:40px}
-input {padding:10px;margin:10px;border:none;border-radius:5px}
-button {
-  background:gold;
-  border:none;
-  padding:10px;
-  border-radius:5px;
-  cursor:pointer;
-}
-.game {
-  background:#1a2338;
-  margin:10px;
-  padding:15px;
-  border-radius:10px;
-  display:flex;
-  justify-content:space-between;
-}
-.container {padding:20px}
-.admin {
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  background:#111;
-  padding:15px;
-  border-radius:10px;
-  display:none;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  🦅 FALCONBETS
-  <div>Saldo: R$ <span id="saldo">0</span></div>
-</header>
-
-<div class="banner">
-  <input id="user" placeholder="Usuário">
-  <button onclick="login()">Entrar</button>
-</div>
-
-<div class="container">
-  <h2>Jogos ⚽</h2>
-  <div id="games"></div>
-</div>
-
-<div class="admin" id="admin">
-  <h3>👑 ADMIN</h3>
-  <input id="userAdmin" placeholder="Usuário">
-  <input id="valor" placeholder="Valor">
-  <button onclick="addSaldo()">Adicionar saldo</button>
-</div>
-
 <script>
 const API = "https://falconbets-pro.onrender.com";
 
 let usuario="";
 let saldo=0;
 
+// LOGIN
 async function login(){
   usuario=document.getElementById("user").value;
 
@@ -91,10 +23,12 @@ async function login(){
   }
 }
 
+// SALDO
 function atualizarSaldo(){
   document.getElementById("saldo").innerText=saldo;
 }
 
+// CARREGAR JOGOS
 async function loadGames(){
   try{
     const res = await fetch(API + "/games");
@@ -124,6 +58,7 @@ async function loadGames(){
   }
 }
 
+// APOSTA
 async function bet(id, odd){
   if(!usuario) return alert("Faça login");
 
@@ -145,6 +80,28 @@ async function bet(id, odd){
   alert("Aposta realizada!");
 }
 
+// 🔥 ATUALIZAR JOGOS (ADMIN)
+async function updateGames(){
+  const texto = document.getElementById("gamesAdmin").value;
+
+  try{
+    const games = JSON.parse(texto);
+
+    await fetch(API + "/admin/games", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ games })
+    });
+
+    alert("Jogos atualizados!");
+    loadGames();
+
+  }catch(e){
+    alert("Erro no formato JSON");
+  }
+}
+
+// ADMIN SALDO
 function addSaldo(){
   const user=document.getElementById("userAdmin").value;
   const valor=parseFloat(document.getElementById("valor").value);
@@ -155,8 +112,6 @@ function addSaldo(){
   }
 }
 
+// AUTO LOAD
 window.onload = loadGames;
 </script>
-
-</body>
-</html>
